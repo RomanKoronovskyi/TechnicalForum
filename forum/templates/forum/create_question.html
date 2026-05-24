@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Нове запитання</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 40px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        h1 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        input[type="text"], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-family: inherit; }
+        textarea { height: 180px; resize: vertical; }
+        .btn-submit { background: #3498db; color: white; padding: 11px 20px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .btn-submit:hover { background: #2980b9; }
+        .btn-cancel { color: #7f8c8d; text-decoration: none; margin-left: 15px; font-size: 14px; }
+        .btn-cancel:hover { color: #333; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Створити нове запитання</h1>
+
+        <form method="POST">
+            {% csrf_token %} <div class="form-group">
+                <label for="title">Тема запитання (Коротко)</label>
+                <input type="text" id="title" name="title" required placeholder="Наприклад: Помилка підключення до PostgreSQL в Docker-контейнері">
+            </div>
+
+            <div class="form-group">
+                <label for="body">Детальний опис проблеми (код, опис помилки з терміналу)</label>
+                <textarea id="body" name="body" required placeholder="Опишіть вашу проблему, додайте фрагменти коду або текст помилки..."></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Опублікувати запитання</button>
+            <a href="{% url 'forum:question_list' %}" class="btn-cancel">Скасувати</a>
+        </form>
+    </div>
+</body>
+</html>
