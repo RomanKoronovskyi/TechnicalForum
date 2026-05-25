@@ -2,20 +2,13 @@ import os
 import threading
 from django.views.generic import ListView, DetailView
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import redirect, render
-from django.contrib.auth.models import User
-from google import genai
-from .models import Question, Answer
-from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
-from .models import Question, Answer, Vote, Notification, Profile
-from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login
 from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, get_object_or_404, redirect
+from google import genai
 
+from forum.models import Question, Answer, Notification, Tag, Vote
+from users.models import Profile
 
 class QuestionListView(ListView):
     model = Question
@@ -91,7 +84,6 @@ def create_question(request):
 @login_required
 def create_answer(request, question_id):
     if request.method == 'POST':
-        from django.shortcuts import get_object_or_404
         question = get_object_or_404(Question, pk=question_id)
         body = request.POST.get('body')
 
@@ -144,7 +136,7 @@ def accept_answer(request, pk):
 
         Notification.objects.create(
             user=answer.author,
-            text=f"Вашу відповідь на запитання '{answer.question.title}' прийнято автором!"
+            answer=answer
         )
 
     return redirect('forum:question_detail', pk=answer.question.pk)
@@ -155,17 +147,6 @@ def notifications_list(request):
     notifications = request.user.notifications.all()
     notifications.update(is_read=True)
     return render(request, 'forum/notifications.html', {'notifications': notifications})
-
-def register(request):
-    if request.method == 'POST':
-        form = UserCreationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect('forum:question_list')
-    else:
-        form = UserCreationForm()
-    return render(request, 'registration/register.html', {'form': form})
 
 
 @login_required

@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
     QuestionListView, QuestionDetailView, create_question,
     create_answer, vote_question, accept_answer, notifications_list,
-    users_list, delete_user, register, delete_question
+    users_list, delete_user, delete_question
 )
 
 app_name = 'forum'
@@ -17,6 +17,5 @@ urlpatterns = [
     path('notifications/', notifications_list, name='notifications_list'),
     path('users/', users_list, name='users_list'),
     path('users/<int:user_id>/delete/', delete_user, name='delete_user'),
-    path('register/', register, name='register'),
     path('question/<int:question_id>/delete/', delete_question, name='delete_question'),
 ]
