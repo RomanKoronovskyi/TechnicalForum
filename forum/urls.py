@@ -1,7 +1,7 @@
 from django.urls import path
 from .views import (
     QuestionListView, QuestionDetailView, create_question,
-    create_answer, vote_question, accept_answer, notifications_list
+    create_answer, vote_question, accept_answer, notifications_list, register
 )
 
 app_name = 'forum'
@@ -14,4 +14,5 @@ urlpatterns = [
     path('question/<int:pk>/vote/<str:vote_type>/', vote_question, name='vote_question'),
     path('answer/<int:pk>/accept/', accept_answer, name='accept_answer'),
     path('notifications/', notifications_list, name='notifications_list'),
+    path('register/', register, name='register'),
 ]

@@ -1,0 +1,7 @@
+<h2>Вхід на Технічний Форум</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" style="background:#3498db; color:white; border:none; padding:8px 15px; border-radius:4px; cursor:pointer;">Увійти</button>
+</form>
+<p>Немає акаунту? <a href="{% url 'forum:register' %}">Зареєструватися</a></p>

@@ -39,12 +39,26 @@
 </head>
 <body>
     <div class="navbar-top">
-        <div>Вітаємо, <strong>{{ user.username }}</strong> (Репутація: {{ user.profile.reputation|default:0 }})</div>
-        <div>
-            <a href="{% url 'forum:notifications_list' %}">
-                Сповіщення ({% if user.notifications.count %}{{ user.notifications.count }}{% else %}0{% endif %})
-            </a>
-        </div>
+        {% if user.is_authenticated %}
+            <div>
+                Вітаємо, <strong>{{ user.username }}</strong> (Репутація: {{ user.profile.reputation|default:0 }})
+                <form action="{% url 'logout' %}" method="post" style="display: inline; margin-left: 15px;">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: underline; padding: 0;">Вийти</button>
+                </form>
+            </div>
+            <div>
+                <a href="{% url 'forum:notifications_list' %}">
+                    Сповіщення ({% if user.notifications.count %}{{ user.notifications.count }}{% else %}0{% endif %})
+                </a>
+            </div>
+        {% else %}
+            <div>Ви зайшли як Гість</div>
+            <div>
+                <a href="{% url 'login' %}" style="margin-right: 15px;">Увійти</a>
+                <a href="{% url 'forum:register' %}" style="color: #2ecc71;">Реєстрація</a>
+            </div>
+        {% endif %}
     </div>
 
     <div class="container">
