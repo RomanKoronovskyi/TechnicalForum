@@ -12,10 +12,10 @@
 </head>
 <body>
     <div class="container">
-        <a href="{% url 'forum:question_list' %}" class="back">← На головну</a>
+        <a href="{% url 'forum:question_list' %}" class="back">На головну</a>
         <h2>Ваші системні сповіщення</h2>
         {% for n in notifications %}
-            <div class="notif-card">⚡ {{ n.text }} <small style="color: #999;">({{ n.created_at|date:"H:i" }})</small></div>
+            <div class="notif-card">{{ n.text }} <small style="color: #999;">({{ n.created_at|date:"H:i" }})</small></div>
         {% empty %}
             <p>Нових сповіщень немає.</p>
         {% endfor %}

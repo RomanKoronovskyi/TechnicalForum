@@ -186,3 +186,15 @@ def delete_user(request, user_id):
         user_to_delete = get_object_or_404(User, id=user_id)
         user_to_delete.delete()
     return redirect('forum:users_list')
+
+
+@login_required
+def delete_question(request, question_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Доступ заборонено. Ви не маєте прав для видалення контенту.")
+
+    if request.method == 'POST':
+        question = get_object_or_404(Question, id=question_id)
+        question.delete()
+
+    return redirect('forum:question_list')

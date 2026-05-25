@@ -41,7 +41,7 @@
     <div class="navbar-top">
         {% if user.is_authenticated %}
             <div>
-                Вітаємо, <strong>{{ user.username }}</strong> (Репутація: {{ user.profile.reputation|default:0 }})
+                <strong>{{ user.username }}</strong> (Репутація: {{ user.profile.reputation|default:0 }})
                 <form action="{% url 'logout' %}" method="post" style="display: inline; margin-left: 15px;">
                     {% csrf_token %}
                     <button type="submit" style="background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: underline; padding: 0;">Вийти</button>
@@ -68,7 +68,6 @@
             <h1>{{ question.title }}</h1>
 
             <div style="margin: 15px 0; background: #fafafa; padding: 10px; border-radius: 4px; display: flex; align-items: center; gap: 15px;">
-                <strong>Голосів: {{ question.votes }}</strong>
                 <a href="{% url 'forum:vote_question' question.pk 'up' %}" style="color: green; text-decoration: none; font-weight: bold;">▲ Вгору</a>
                 <a href="{% url 'forum:vote_question' question.pk 'down' %}" style="color: red; text-decoration: none; font-weight: bold;">▼ Вниз</a>
                 <span style="color: #7f8c8d; margin-left: auto;">Автор: {{ question.author.username }} (Rep: {{ question.author.profile.reputation|default:0 }})</span>

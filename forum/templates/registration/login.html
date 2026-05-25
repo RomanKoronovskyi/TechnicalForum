@@ -3,38 +3,52 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Вхід — Технічний Форум</title>
+    <title>Вхід на Форум</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 400px; border-top: 4px solid #3498db; box-sizing: border-box; }
-        h2 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; font-size: 22px; text-align: center; }
-        .auth-card p { margin-bottom: 15px; }
-        .auth-card label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #555; }
-        .auth-card input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .auth-card input:focus { border-color: #3498db; outline: none; }
-        .btn-submit { background: #3498db; color: white; width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 400px; box-sizing: border-box; border-top: 4px solid #3498db; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 25px; font-size: 24px; }
+        p { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #34495e; font-weight: bold; font-size: 14px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        input:focus { border-color: #3498db; outline: none; }
+        .btn-submit { width: 100%; background: #3498db; color: white; border: none; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 15px; transition: background 0.2s; }
         .btn-submit:hover { background: #2980b9; }
-        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #7f8c8d; }
-        .auth-footer a { color: #3498db; text-decoration: none; font-weight: bold; }
-        .auth-footer a:hover { text-decoration: underline; }
+        .form-footer { text-align: center; margin-top: 20px; font-size: 13px; color: #7f8c8d; }
+        .form-footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+        .form-footer a:hover { text-decoration: underline; }
+        .error-box { background-color: #fde8e8; color: #e74c3c; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 13px; border: 1px solid #f8b4b4; font-weight: bold; display: flex; align-items: center; gap: 8px; }
     </style>
 </head>
 <body>
-    <div class="auth-card">
-        <h2>Вхід на Технічний Форум</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <p>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                </p>
-            {% endfor %}
-            <button type="submit" class="btn-submit">Увійти</button>
-        </form>
-        <div class="auth-footer">
-            Немає акаунту? <a href="{% url 'forum:register' %}">Зареєструватися</a>
-        </div>
+
+<div class="login-card">
+    <h2>Вхід на Технічний Форум</h2>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="error-box">
+                <i class="fa-solid fa-triangle-exclamation"></i> Неправильний логін або пароль
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+            </p>
+        {% endfor %}
+
+        <button type="submit" class="btn-submit">Увійти</button>
+    </form>
+
+    <div class="form-footer">
+        Немає акаунту? <a href="{% url 'forum:register' %}">Зареєструватися</a>
     </div>
+</div>
+
 </body>
 </html>

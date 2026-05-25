@@ -3,42 +3,69 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Реєстрація — Технічний Форум</title>
+    <title>Реєстрація розробника</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .auth-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); width: 100%; max-width: 400px; border-top: 4px solid #2ecc71; box-sizing: border-box; }
-        h2 { color: #2c3e50; margin-top: 0; margin-bottom: 25px; font-size: 22px; text-align: center; }
-        .auth-card p { margin-bottom: 15px; }
-        .auth-card label { display: block; font-weight: bold; margin-bottom: 5px; font-size: 14px; color: #555; }
-        .auth-card input { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .auth-card input:focus { border-color: #2ecc71; outline: none; }
-        .helptext { display: block; font-size: 11px; color: #7f8c8d; margin-top: 3px; }
-        .btn-submit { background: #2ecc71; color: white; width: 100%; padding: 12px; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 15px; transition: background 0.2s; }
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px 0; }
+        .register-card { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); width: 100%; max-width: 500px; box-sizing: border-box; border-top: 4px solid #2ecc71; }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 25px; font-size: 24px; }
+        p { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; color: #34495e; font-weight: bold; font-size: 14px; }
+        input[type="text"], input[type="password"] { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        input:focus { border-color: #2ecc71; outline: none; }
+        .helptext { display: block; font-size: 12px; color: #7f8c8d; margin-top: 5px; line-height: 16px; }
+        .helptext ul { margin: 5px 0 0 0; padding-left: 20px; color: #555; }
+        .helptext li { margin-bottom: 3px; }
+        .btn-submit { width: 100%; background: #2ecc71; color: white; border: none; padding: 12px; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer; margin-top: 20px; transition: background 0.2s; }
         .btn-submit:hover { background: #27ae60; }
-        .auth-footer { text-align: center; margin-top: 20px; font-size: 14px; color: #7f8c8d; }
-        .auth-footer a { color: #2ecc71; text-decoration: none; font-weight: bold; }
-        .auth-footer a:hover { text-decoration: underline; }
+        .form-footer { text-align: center; margin-top: 20px; font-size: 13px; color: #7f8c8d; }
+        .form-footer a { color: #3498db; text-decoration: none; font-weight: bold; }
+        .form-footer a:hover { text-decoration: underline; }
+        .error-box { background-color: #fde8e8; color: #e74c3c; padding: 12px; border-radius: 4px; margin-bottom: 20px; font-size: 13px; border: 1px solid #f8b4b4; line-height: 18px; }
     </style>
 </head>
 <body>
-    <div class="auth-card">
-        <h2>Реєстрація розробника</h2>
-        <form method="post">
-            {% csrf_token %}
-            {% for field in form %}
-                <p>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                    {% if field.help_text %}
-                        <span class="helptext">{{ field.help_text|safe }}</span>
-                    {% endif %}
-                </p>
-            {% endfor %}
-            <button type="submit" class="btn-submit">Створити акаунт</button>
-        </form>
-        <div class="auth-footer">
-            Вже є акаунт? <a href="{% url 'login' %}">Увійти</a>
-        </div>
+
+<div class="register-card">
+    <h2>Реєстрація</h2>
+
+    <form method="post" novalidate>
+        {% csrf_token %}
+
+        {% if form.errors %}
+            <div class="error-box">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        {% if "already exists" in error or "користувач з таким" in error or "існує" in error %}
+                            <strong>Користувач з таким логіном вже зареєстрований</strong>
+                        {% elif "mismatch" in error or "не співпадають" in error %}
+                            <strong>Введені паролі не співпадають. Спробуйте ще раз.</strong>
+                        {% else %}
+                            {{ error }}
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% for field in form %}
+            <p>
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                {{ field }}
+                {% if field.help_text %}
+                    <span class="helptext">{{ field.help_text|safe }}</span>
+                {% endif %}
+            </p>
+        {% endfor %}
+
+        <button type="submit" class="btn-submit">Створити акаунт</button>
+    </form>
+
+    <div class="form-footer">
+        Вже є акаунт? <a href="{% url 'login' %}">Увійти</a>
     </div>
+</div>
+
 </body>
 </html>

@@ -21,7 +21,7 @@
         .nav-link-notif { color: #f1c40f; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease; }
         .nav-link-notif:hover { transform: scale(1.03); }
 
-        .btn-logout { background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: none; padding: 0; font-family: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
+        .btn-logout { background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: none; padding: 0; margin-left: 5px; font-family: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
         .btn-logout:hover { color: #c0392b; text-decoration: underline; }
 
         .user-info { display: flex; align-items: center; gap: 8px; }
@@ -34,7 +34,10 @@
         .question-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #3498db; }
         .question-title { font-size: 20px; color: #2980b9; text-decoration: none; font-weight: bold; display: inline-block; margin-bottom: 5px; }
         .question-title:hover { text-decoration: underline; }
-        .question-meta { font-size: 13px; color: #7f8c8d; margin-top: 5px; }
+        .question-meta { font-size: 13px; color: #7f8c8d; margin-top: 5px; line-height: 20px; }
+
+        .btn-delete-question { background: none; border: none; color: #e74c3c; cursor: pointer; font-weight: bold; padding: 0; font-family: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 4px; transition: color 0.2s; }
+        .btn-delete-question:hover { color: #c0392b; text-decoration: underline; }
 
         .tag-badge { background: #e1f0fa; color: #2980b9; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; text-decoration: none; }
         .no-questions { background: white; padding: 30px; text-align: center; border-radius: 8px; color: #7f8c8d; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
@@ -46,13 +49,13 @@
         {% if user.is_authenticated %}
             <div class="nav-link-group">
                 <span class="user-info">
-                    <i class="fa-solid fa-user-code" style="color: #3498db;"></i> Вітаємо, <strong>{{ user.username }}</strong>
+                    <i class="fa-solid fa-user-code" style="color: #3498db;"></i><strong>{{ user.username }}</strong>
                     <span class="reputation-badge">Репутація: {{ user.profile.reputation|default:0 }}</span>
                 </span>
 
                 {% if user.is_superuser %}
                     <a href="{% url 'forum:users_list' %}" class="nav-link-admin">
-                        <i class="fa-solid fa-sliders"></i> Керування юзерами
+                        <i class="fa-solid fa-sliders"></i> Зареєстровані користувачі
                     </a>
                 {% endif %}
 
@@ -70,8 +73,8 @@
             </div>
         {% else %}
             <div><i class="fa-solid fa-user-secret"></i> Ви переглядаєте форум як <strong>Гість</strong></div>
-            <div>
-                <a href="{% url 'login' %}" class="nav-link" style="margin-right: 15px;"><i class="fa-solid fa-right-to-bracket"></i> Увійти</a>
+            <div class="nav-link-group">
+                <a href="{% url 'login' %}" class="nav-link"><i class="fa-solid fa-right-to-bracket"></i> Увійти</a>
                 <a href="{% url 'forum:register' %}" class="nav-link" style="color: #2ecc71;"><i class="fa-solid fa-user-plus"></i> Реєстрація</a>
             </div>
         {% endif %}
@@ -93,6 +96,15 @@
                         <i class="fa-regular fa-user"></i> <strong>{{ question.author.username }}</strong> (Rep: {{ question.author.profile.reputation|default:0 }}) |
                         <i class="fa-regular fa-star"></i> Рейтинг: <strong>{{ question.votes }}</strong> |
                         <i class="fa-regular fa-comments"></i> Відповідей: {{ question.answers.count }}
+
+                        {% if user.is_superuser %}
+                            <form action="{% url 'forum:delete_question' question.id %}" method="post" style="display: inline; margin-left: 15px;" onsubmit="return confirm('Ви впевнені, що хочете безповоротно видалити це запитання та всі відповіді на нього?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete-question">
+                                    <i class="fa-solid fa-trash-can"></i> Видалити питання
+                                </button>
+                            </form>
+                        {% endif %}
 
                         <div style="margin-top: 8px;">
                             {% for tag in question.tags.all %}
