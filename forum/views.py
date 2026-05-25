@@ -11,6 +11,10 @@ from django.shortcuts import get_object_or_404, redirect, render
 from .models import Question, Answer, Vote, Notification, Profile
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login
+from django.contrib.auth.models import User
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, get_object_or_404, redirect
 
 
 class QuestionListView(ListView):
@@ -162,3 +166,23 @@ def register(request):
     else:
         form = UserCreationForm()
     return render(request, 'registration/register.html', {'form': form})
+
+
+@login_required
+def users_list(request):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Доступ заборонено. Ця панель доступна лише для суперкористувачів.")
+
+    users = User.objects.exclude(id=request.user.id)
+    return render(request, 'forum/users_list.html', {'users_list': users})
+
+
+@login_required
+def delete_user(request, user_id):
+    if not request.user.is_superuser:
+        return HttpResponseForbidden("Доступ заборонено.")
+
+    if request.method == 'POST':
+        user_to_delete = get_object_or_404(User, id=user_id)
+        user_to_delete.delete()
+    return redirect('forum:users_list')

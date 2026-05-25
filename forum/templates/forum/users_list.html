@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Керування користувачами</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f6f9; margin: 40px; }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #2c3e50; color: white; }
+        .btn-delete { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-delete:hover { background: #c0392b; }
+
+        .back-link { display: inline-flex; align-items: center; gap: 6px; margin-bottom: 20px; color: #3498db; text-decoration: none; font-weight: bold; transition: color 0.2s; }
+        .back-link:hover { color: #2980b9; text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="{% url 'forum:question_list' %}" class="back-link">
+            <i class="fa-solid fa-arrow-left"></i> Назад до списку запитань
+        </a>
+
+        <h2><i class="fa-solid fa-users-gear" style="color: #2c3e50;"></i> Панель керування користувачами (Адміністратор: {{ user.username }})</h2>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Логін розробника</th>
+                    <th>Репутація на форумі</th>
+                    <th>Управління доступом</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for u in users_list %}
+                    <tr>
+                        <td>{{ u.id }}</td>
+                        <td><strong>{{ u.username }}</strong></td>
+                        <td>{{ u.profile.reputation|default:0 }}</td>
+                        <td>
+                            <form action="{% url 'forum:delete_user' u.id %}" method="post" onsubmit="return confirm('Ви впевнені, що хочете видалити розробника {{ u.username }} з бази даних?');">
+                                {% csrf_token %}
+                                <button type="submit" class="btn-delete">
+                                    <i class="fa-solid fa-user-minus"></i> Видалити
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #7f8c8d; padding: 20px; font-style: italic;">
+                            Інших зареєстрованих користувачів у системі немає.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

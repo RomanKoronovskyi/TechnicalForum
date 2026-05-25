@@ -4,17 +4,31 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Технічний Форум</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; margin: 40px; }
         .container { max-width: 800px; margin: 0 auto; }
 
-        .navbar-top { background: #2c3e50; padding: 12px 20px; margin: -40px -40px 40px -40px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .navbar-top a { color: #f1c40f; text-decoration: none; font-weight: bold; }
-        .btn-logout { background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: underline; padding: 0; margin-left: 10px; font-family: inherit; font-size: inherit; }
-        .btn-logout:hover { color: #c0392b; }
+        .navbar-top { background: #2c3e50; padding: 14px 20px; margin: -40px -40px 40px -40px; color: white; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); font-size: 14px; }
+
+        .nav-link-group { display: flex; align-items: center; gap: 15px; }
+        .nav-link { color: white; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
+        .nav-link:hover { color: #3498db; }
+
+        .nav-link-admin { color: #2ecc71; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
+        .nav-link-admin:hover { color: #27ae60; }
+
+        .nav-link-notif { color: #f1c40f; text-decoration: none; font-weight: bold; display: inline-flex; align-items: center; gap: 6px; transition: transform 0.2s ease; }
+        .nav-link-notif:hover { transform: scale(1.03); }
+
+        .btn-logout { background: none; border: none; color: #e74c3c; font-weight: bold; cursor: pointer; text-decoration: none; padding: 0; font-family: inherit; font-size: inherit; display: inline-flex; align-items: center; gap: 6px; transition: color 0.2s ease; }
+        .btn-logout:hover { color: #c0392b; text-decoration: underline; }
+
+        .user-info { display: flex; align-items: center; gap: 8px; }
+        .reputation-badge { background: #34495e; padding: 2px 8px; border-radius: 12px; font-size: 12px; color: #f1c40f; font-weight: bold; margin-left: 4px; }
 
         h1 { color: #2c3e50; border-bottom: 2px solid #2c3e50; padding-bottom: 10px; margin-bottom: 20px; font-size: 26px; }
-        .btn-create { display: inline-block; background: #2ecc71; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-bottom: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2); }
+        .btn-create { display: inline-block; background: #2ecc71; color: white; padding: 10px 15px; text-decoration: none; border-radius: 5px; margin-bottom: 20px; font-weight: bold; box-shadow: 0 2px 4px rgba(46, 204, 113, 0.2); transition: background 0.2s; }
         .btn-create:hover { background: #27ae60; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid #3498db; }
@@ -23,7 +37,6 @@
         .question-meta { font-size: 13px; color: #7f8c8d; margin-top: 5px; }
 
         .tag-badge { background: #e1f0fa; color: #2980b9; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: bold; margin-left: 5px; text-decoration: none; }
-
         .no-questions { background: white; padding: 30px; text-align: center; border-radius: 8px; color: #7f8c8d; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
     </style>
 </head>
@@ -31,23 +44,35 @@
 
     <div class="navbar-top">
         {% if user.is_authenticated %}
-            <div>
-                Вітаємо, <strong>{{ user.username }}</strong> (Репутація: {{ user.profile.reputation|default:0 }})
+            <div class="nav-link-group">
+                <span class="user-info">
+                    <i class="fa-solid fa-user-code" style="color: #3498db;"></i> Вітаємо, <strong>{{ user.username }}</strong>
+                    <span class="reputation-badge">Репутація: {{ user.profile.reputation|default:0 }}</span>
+                </span>
+
+                {% if user.is_superuser %}
+                    <a href="{% url 'forum:users_list' %}" class="nav-link-admin">
+                        <i class="fa-solid fa-sliders"></i> Керування юзерами
+                    </a>
+                {% endif %}
+
                 <form action="{% url 'logout' %}" method="post" style="display: inline;">
                     {% csrf_token %}
-                    <button type="submit" class="btn-logout">Вийти</button>
+                    <button type="submit" class="btn-logout">
+                        <i class="fa-solid fa-door-open"></i> Вийти
+                    </button>
                 </form>
             </div>
             <div>
-                <a href="{% url 'forum:notifications_list' %}">
-                    Сповіщення ({% if user.notifications.count %}{{ user.notifications.count }}{% else %}0{% endif %})
+                <a href="{% url 'forum:notifications_list' %}" class="nav-link-notif">
+                    <i class="fa-solid fa-bell"></i> Сповіщення ({% if user.notifications.count %}{{ user.notifications.count }}{% else %}0{% endif %})
                 </a>
             </div>
         {% else %}
-            <div>Ви переглядаєте форум як <strong>Гість</strong></div>
+            <div><i class="fa-solid fa-user-secret"></i> Ви переглядаєте форум як <strong>Гість</strong></div>
             <div>
-                <a href="{% url 'login' %}" style="margin-right: 15px;">Увійти</a>
-                <a href="{% url 'forum:register' %}" style="color: #2ecc71;">Реєстрація</a>
+                <a href="{% url 'login' %}" class="nav-link" style="margin-right: 15px;"><i class="fa-solid fa-right-to-bracket"></i> Увійти</a>
+                <a href="{% url 'forum:register' %}" class="nav-link" style="color: #2ecc71;"><i class="fa-solid fa-user-plus"></i> Реєстрація</a>
             </div>
         {% endif %}
     </div>
@@ -55,7 +80,7 @@
     <div class="container">
         <h1>Технічний Форум Запитань та Відповідей</h1>
 
-        <a href="{% url 'forum:create_question' %}" class="btn-create">+ Задати питання</a>
+        <a href="{% url 'forum:create_question' %}" class="btn-create"><i class="fa-solid fa-plus"></i> Задати питання</a>
 
         {% if questions %}
             {% for question in questions %}
@@ -64,10 +89,10 @@
                         {{ question.title }}
                     </a>
                     <div class="question-meta">
-                        Опубліковано: {{ question.created_at|date:"d.m.Y H:i" }} |
-                        Автор: <strong>{{ question.author.username }}</strong> (Rep: {{ question.author.profile.reputation|default:0 }}) |
-                        Рейтинг: <strong>{{ question.votes }}</strong> |
-                        Відповідей: {{ question.answers.count }}
+                        <i class="fa-regular fa-calendar"></i> {{ question.created_at|date:"d.m.Y H:i" }} |
+                        <i class="fa-regular fa-user"></i> <strong>{{ question.author.username }}</strong> (Rep: {{ question.author.profile.reputation|default:0 }}) |
+                        <i class="fa-regular fa-star"></i> Рейтинг: <strong>{{ question.votes }}</strong> |
+                        <i class="fa-regular fa-comments"></i> Відповідей: {{ question.answers.count }}
 
                         <div style="margin-top: 8px;">
                             {% for tag in question.tags.all %}
